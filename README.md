@@ -11,9 +11,9 @@ JoBird is [JosiahHands](https://github.com/JosiahHands)' edition of [Postbird](h
 
 ### JoBird v0.8.5
 
-MacOS (Apple Silicon): [JoBird-0.8.5-arm64.dmg](https://github.com/JosiahHands/JosiahPostbird/releases/download/0.8.5/JoBird-0.8.5-arm64.dmg) - MacOS 10.9+
+MacOS (Apple Silicon): [JoBird-0.8.5-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/0.8.5/JoBird-0.8.5-arm64.dmg) - macOS 10.13+
 
-All releases: https://github.com/JosiahHands/JosiahPostbird/releases
+All releases: https://github.com/JosiahHands/JoBird/releases
 
 **What's new in JoBird**
 
@@ -34,8 +34,8 @@ All releases: https://github.com/JosiahHands/JosiahPostbird/releases
 **Build it yourself**
 
 ```sh
-git clone https://github.com/JosiahHands/JosiahPostbird.git
-cd JosiahPostbird
+git clone https://github.com/JosiahHands/JoBird.git
+cd JoBird
 npm install
 npm run build
 ls ./dist   # JoBird-0.8.5-arm64.dmg (or -x64 on Intel Macs)
