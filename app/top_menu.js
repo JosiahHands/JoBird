@@ -194,7 +194,7 @@ var template /*: Electron.MenuItemConstructorOptions[] */ = [
     role: 'help',
     submenu: [
       {
-        label: "Postbird Help",
+        label: "JoBird Help",
         accelerator: 'CmdOrCtrl+Shift+/',
         click: () => {
           var help = global.HelpScreen.open();
@@ -213,7 +213,7 @@ var template /*: Electron.MenuItemConstructorOptions[] */ = [
 
 
 if (process.platform == 'darwin') {
-  var selfName = "Postbird";
+  var selfName = "JoBird";
   // @ts-ignore
   template.unshift({
     label: selfName,
@@ -281,7 +281,7 @@ if (process.platform == 'linux') {
   var helpMenuSubmenu = /*:: <Electron.MenuItemConstructorOptions[]><any> */ template[6].submenu;
   helpMenuSubmenu.unshift(
     {
-      label: 'About Postbird',
+      label: 'About JoBird',
       click: () => {
         var help = global.HelpScreen.open();
         help.activatePage("about-postbird");

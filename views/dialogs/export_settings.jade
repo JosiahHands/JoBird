@@ -1,0 +1,16 @@
+form
+  p.export-settings-hint Module style for "Save as TypeScript" and "Save as JavaScript"
+
+  p.module-system-toggle
+    label
+      input(type="radio" name="module_system" value="module" checked=(moduleSystem == 'module'))
+      = " Module"
+      code export const result = [...]
+    label
+      input(type="radio" name="module_system" value="commonjs" checked=(moduleSystem == 'commonjs'))
+      = " CommonJS"
+      code module.exports = { result }
+      span.ts-note (TypeScript: export = result)
+
+  p.buttons
+    button.ok Done

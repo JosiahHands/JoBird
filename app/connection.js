@@ -116,7 +116,7 @@ class Connection {
   static parseConnectionString(postgresUrl /*: string */) /*: ConnectionOptions */ {
     var cs = new ConnectionString(postgresUrl, {
       params: {
-        application_name: 'Postbird.app'
+        application_name: 'JoBird.app'
       }
     });
     var res = Object.assign({}, cs.params, {

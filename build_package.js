@@ -44,12 +44,14 @@ process.on('unhandledRejection', error => {
       }],
       npmRebuild: false, // because we changed dependency paths postgres manually
       icon: isWin ? "build_files/icon.ico" : __dirname + "/build_files/icon.icns",
-      productName: process.platform == 'linux' ? 'postbird' : 'Postbird',
+      appId: "com.josiahhands.jobird",
+      productName: process.platform == 'linux' ? 'jobird' : 'JoBird',
       publish: null,
 
       mac: {
         category: "public.app-category.developer-tools",
         target: ["dmg"],
+        artifactName: "${productName}-${version}-${arch}.${ext}", // e.g. JoBird-0.8.5-arm64.dmg
         bundleVersion: buildVersion,
         bundleShortVersion: packageJson.version,
         minimumSystemVersion: "10.9.0",

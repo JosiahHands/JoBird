@@ -1766,6 +1766,80 @@ body.sidebar-resizing * {
   margin-bottom: 4px;
   margin-left: -9px;
 }
+.window-content.query .middlebar .save-split {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.window-content.query .middlebar .save-split.is-hidden {
+  display: none;
+}
+.window-content.query .middlebar .save-split .saveButton {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 0;
+}
+.window-content.query .middlebar .save-split .saveMenuButton {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-width: 0;
+  margin-left: -4px;
+  padding: 0 5px;
+  font-size: 10px;
+}
+.window-content.query .middlebar .save-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 2px;
+  min-width: 130px;
+  z-index: 100;
+  padding: 4px 0 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+}
+.window-content.query .middlebar .save-menu.is-hidden {
+  display: none;
+}
+.window-content.query .middlebar .save-menu a.save-format {
+  display: block;
+  padding: 2px 12px 2px 22px;
+  line-height: 18px;
+  color: #222;
+  cursor: default;
+  position: relative;
+}
+.window-content.query .middlebar .save-menu a.save-format.selected:before {
+  content: "✓";
+  position: absolute;
+  left: 7px;
+}
+.window-content.query .middlebar .save-menu a.save-format:hover {
+  background: #3b82f6;
+  color: #fff;
+}
+.window-content.query .middlebar .save-menu .save-menu-footer {
+  margin-top: 4px;
+  padding: 1px 6px 2px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: right;
+}
+.window-content.query .middlebar .save-menu .save-menu-footer a.save-settings {
+  display: inline-block;
+  font-size: 16px;
+  line-height: 16px;
+  padding: 0 3px;
+  color: #777;
+  cursor: default;
+  border-radius: 3px;
+}
+.window-content.query .middlebar .save-menu .save-menu-footer a.save-settings:hover {
+  color: #222;
+  background: rgba(0, 0, 0, 0.08);
+}
 .window-content.query .result {
   padding: 0 9px;
   width: 100%;
@@ -2282,6 +2356,31 @@ small.help-icon:hover:after {
   opacity: 0.75;
 }
 
+.export-settings-dialog .export-settings-hint {
+  color: #666;
+  font-size: 12px;
+}
+.export-settings-dialog p.module-system-toggle {
+  text-align: left;
+  margin: 10px auto;
+  display: table;
+}
+.export-settings-dialog p.module-system-toggle label {
+  display: block;
+  line-height: 24px;
+  cursor: default;
+}
+.export-settings-dialog p.module-system-toggle label code {
+  margin-left: 10px;
+  font-size: 11px;
+  color: #777;
+}
+.export-settings-dialog p.module-system-toggle label .ts-note {
+  margin-left: 6px;
+  font-size: 11px;
+  color: #999;
+}
+
 /*
  *Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org> */
 .hljs {
@@ -2544,6 +2643,27 @@ body.dark-mode .native-look:active {
 body.dark-mode .add-connection.native-look {
   background: #6c6b6d;
   padding-left: 9px;
+}
+body.dark-mode .window-content.query .middlebar .save-menu {
+  background: #2d2d2d;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+body.dark-mode .window-content.query .middlebar .save-menu a.save-format {
+  color: #e9e9e9;
+}
+body.dark-mode .window-content.query .middlebar .save-menu .save-menu-footer {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+body.dark-mode .window-content.query .middlebar .save-menu .save-menu-footer a.save-settings {
+  color: #aaa;
+}
+body.dark-mode .window-content.query .middlebar .save-menu .save-menu-footer a.save-settings:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+body.dark-mode .export-settings-dialog .export-settings-hint {
+  color: #aaa;
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -2,6 +2,7 @@ require('./base');
 
 module.exports = {
   Column: require('./column'),
+  ExportSettings: require('./export_settings'),
   Index: require('./index'),
   LastQuery: require('./last_query'),
   Procedure: require('./procedure'),

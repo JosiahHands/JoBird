@@ -202,3 +202,33 @@
     }
   }
 }
+.export-settings-dialog {
+  .export-settings-hint {
+    color: #666;
+    font-size: 12px;
+  }
+
+  p.module-system-toggle {
+    text-align: left;
+    margin: 10px auto;
+    display: table;
+
+    label {
+      display: block;
+      line-height: 24px;
+      cursor: default;
+
+      code {
+        margin-left: 10px;
+        font-size: 11px;
+        color: #777;
+      }
+
+      .ts-note {
+        margin-left: 6px;
+        font-size: 11px;
+        color: #999;
+      }
+    }
+  }
+}

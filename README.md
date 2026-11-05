@@ -1,13 +1,47 @@
-# Postbird 
+# JoBird
 [![Backers on Open Collective](https://opencollective.com/postbird/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/postbird/sponsors/badge.svg)](#sponsors)
 
-Postbird is a cross-platform PostgreSQL GUI client, written in JavaScript, runs with Electron
+JoBird is [JosiahHands](https://github.com/JosiahHands)' edition of [Postbird](https://github.com/Paxa/postbird), a cross-platform PostgreSQL GUI client, written in JavaScript, runs with Electron
 
 <img src="https://user-images.githubusercontent.com/26019/41055418-dcc55700-69f3-11e8-8d3e-572cf5febedc.png" alt="Connection Screen" width=65%>
 <img src="https://user-images.githubusercontent.com/26019/41055416-dc5a5464-69f3-11e8-87b8-994e763da816.png" alt="Table Content" width=65%>
 <img src="https://user-images.githubusercontent.com/26019/41055417-dc8eb56a-69f3-11e8-8145-6f0d5eb147a6.png" alt="Table Structure" width=65%>
 
 ## Download
+
+### JoBird v0.8.5
+
+MacOS (Apple Silicon): [JoBird-0.8.5-arm64.dmg](https://github.com/JosiahHands/JosiahPostbird/releases/download/0.8.5/JoBird-0.8.5-arm64.dmg) - MacOS 10.9+
+
+All releases: https://github.com/JosiahHands/JosiahPostbird/releases
+
+**What's new in JoBird**
+
+* Query tab: **Save as ▾** button with a format menu: CSV (default), JSON, TypeScript, JavaScript, HTML. The last format you picked is remembered.
+* TypeScript export includes an `interface Result` with each column's type; JavaScript/TypeScript exports use `export const result` (module) by default.
+* The ⚙ at the bottom of the format menu opens Export Settings, to switch JS/TS exports between **Module** and **CommonJS**. Remembered between launches.
+
+**Installing**
+
+1. Open the `.dmg` and drag **JoBird** into Applications.
+2. JoBird is a separate app (bundle ID `com.josiahhands.jobird`), so it installs next to the original Postbird without replacing it.
+3. The app isn't signed with an Apple Developer ID, so macOS may block the first launch. Right-click JoBird in Applications and choose **Open**, or run:
+
+   ```sh
+   xattr -dr com.apple.quarantine /Applications/JoBird.app
+   ```
+
+**Build it yourself**
+
+```sh
+git clone https://github.com/JosiahHands/JosiahPostbird.git
+cd JosiahPostbird
+npm install
+npm run build
+ls ./dist   # JoBird-0.8.5-arm64.dmg (or -x64 on Intel Macs)
+```
+
+### Original Postbird
 
 **Version 0.8.4**
 

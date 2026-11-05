@@ -1,6 +1,6 @@
-var csvGenerate = require('csv-stringify');
 var fs = require('fs');
 var electronRemote = require('@electron/remote');
+var resultExporter = require('../../../lib/result_exporter');
 
 /*::
 interface Query_ExterndedResults extends pg.QueryResult {
@@ -14,6 +14,8 @@ class Query extends PaneBase {
     button: JQuery<HTMLElement>
     cleanButton: JQuery<HTMLElement>
     saveButton: JQuery<HTMLElement>
+    saveSplit: JQuery<HTMLElement>
+    saveMenu: JQuery<HTMLElement>
     mime: string
     textarea: JQuery<HTMLElement>
     editor: CodeMirror.EditorFromTextArea
@@ -25,11 +27,22 @@ class Query extends PaneBase {
   renderTab () {
     if (this.content) return;
 
-    this.renderViewToPane('query', 'query_tab');
+    this.renderViewToPane('query', 'query_tab', {exportFormats: resultExporter.FORMATS});
 
     this.button = this.content.find('button:first');
     this.cleanButton = this.content.find('button.cleanButton');
-    this.saveButton = this.content.find('button.saveButton');
+    this.saveSplit = this.content.find('.save-split');
+    this.saveButton = this.saveSplit.find('button.saveButton');
+    this.saveMenu = this.saveSplit.find('.save-menu');
+    this.updateSaveFormat();
+
+    // close "Save as" menu when clicking anywhere else or pressing Esc
+    document.addEventListener('mousedown', (e) => {
+      if (!this.saveSplit[0].contains(/*:: <Node> */ e.target)) this.hideSaveMenu();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key == 'Escape') this.hideSaveMenu();
+    });
 
     this.mime = 'text/x-pgsql';
     this.textarea = this.content.find('textarea.editor');
@@ -101,10 +114,44 @@ class Query extends PaneBase {
 
   toggleSaveButton () {
     if (this.content.find('.result table tr').length) {
-      this.saveButton.show();
+      this.saveSplit.show();
     } else {
-      this.saveButton.hide();
+      this.saveSplit.hide();
+      this.hideSaveMenu();
     }
+  }
+
+  // Button label and checkmark in menu follow remembered format
+  updateSaveFormat () {
+    var format = resultExporter.findFormat(Model.ExportSettings.format());
+    this.saveButton.text(`Save as ${format.label}`);
+    this.saveButton.attr('title', `Save Result as ${format.label} file`);
+    this.saveMenu.find('.save-format').forEach(el => {
+      $u(el).toggleClass('selected', el.getAttribute('data-format') == format.id);
+    });
+  }
+
+  toggleSaveMenu () {
+    if (this.saveMenu.hasClass('is-hidden')) {
+      this.saveMenu.removeClass('is-hidden');
+    } else {
+      this.hideSaveMenu();
+    }
+  }
+
+  hideSaveMenu () {
+    if (this.saveMenu) this.saveMenu.addClass('is-hidden');
+  }
+
+  selectSaveFormat (formatId) {
+    Model.ExportSettings.setFormat(formatId);
+    this.updateSaveFormat();
+    this.hideSaveMenu();
+  }
+
+  openExportSettings () {
+    this.hideSaveMenu();
+    new Dialog.ExportSettings();
   }
 
   saveSnippet () {
@@ -229,52 +276,38 @@ class Query extends PaneBase {
   }
 
   async saveQueryResult () {
+    this.hideSaveMenu();
+    var format = resultExporter.findFormat(Model.ExportSettings.format());
     var dialog = electronRemote.dialog;
     var mainWindow = electronRemote.app.mainWindow;
     var res = await dialog.showSaveDialog(mainWindow, {
-      title: "Save result as csv file",
-      defaultPath: "result.csv",
-      //message: "aaaa",
+      title: `Save result as ${format.label} file`,
+      defaultPath: `result.${format.extension}`,
       filters: [
-        {name: 'CSV File', extensions: ['csv']},
+        {name: format.filterName, extensions: [format.extension]},
         {name: 'Other', extensions: ['*']}
       ]
     });
     if (res.filePath) {
-      this.saveResultTo(res.filePath);
+      this.saveResultTo(res.filePath, format.id);
     }
   }
 
-  saveResultTo(filename) {
+  saveResultTo (filename, formatId = 'csv') {
     App.startLoading("Saving file...", 100);
 
-    var fileWriter = fs.createWriteStream(filename);
-    //this.lastResult;
-
-    var generator = csvGenerate({delimiter: ','})
-    generator.on('readable', () => {
-      var row;
-      while (row = generator.read()) {
-        fileWriter.write(row);
-      }
-    });
-
-    generator.on('finish', () => {
-      fileWriter.end();
-      console.log('file saved');
-      App.stopLoading();
-    });
-
-    var columns = this.lastResult.fields.map(col => { return col.name });
-    generator.write(columns);
-
-    this.lastResult.completeRows.forEach(row => {
-      var values = row.map(val => {
-        return val && val.toISOString ? val.toISOString() : val;
+    try {
+      var content = resultExporter.generate(formatId, this.lastResult.fields, this.lastResult.completeRows, {
+        moduleSystem: Model.ExportSettings.moduleSystem()
       });
-      generator.write(values);
-    });
-    generator.end();
+      fs.writeFileSync(filename, content, 'utf8');
+      console.log('file saved', filename);
+    } catch (error) {
+      console.error(error);
+      $u.alert("Can not save file: " + error.message, {type: "warning"});
+    } finally {
+      App.stopLoading();
+    }
   }
 
 }

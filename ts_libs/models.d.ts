@@ -22,5 +22,7 @@ declare global {
     class Trigger extends Trigger__ { }
 
     class LastQuery extends LastQuery__ { }
+
+    class ExportSettings extends ExportSettings__ { }
   }
 }

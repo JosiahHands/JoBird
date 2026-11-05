@@ -32,7 +32,7 @@ describe('Connection', () => {
     var parsed = Connection.parseConnectionString("postgres://user:pass@host/db?ssl=true");
 
     assert.deepEqual(parsed, {
-      application_name: 'Postbird.app',
+      application_name: 'JoBird.app',
       user: 'user',
       password: 'pass',
       host: 'host',
@@ -59,7 +59,7 @@ describe('Connection', () => {
     var parsed = Connection.parseConnectionString(generated);
 
     assert.deepEqual(parsed, {
-      application_name: 'Postbird.app',
+      application_name: 'JoBird.app',
       user: undefined,
       password: undefined,
       host: '/tmp',
@@ -71,7 +71,7 @@ describe('Connection', () => {
   it("should set deefault params", async () => {
     var parsed = Connection.parseConnectionString("postgres://");
     assert.deepEqual(parsed, {
-      application_name: 'Postbird.app',
+      application_name: 'JoBird.app',
       user: undefined,
       password: undefined,
       host: undefined,

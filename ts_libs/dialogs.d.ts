@@ -11,6 +11,7 @@ declare global {
     class EditUser         extends EditUser__ {}
     class EditValue        extends EditValue__ {}
     class ExportFile       extends ExportFile__ {}
+    class ExportSettings   extends ExportSettingsDialog__ {}
     class HerokuConnection extends HerokuConnection__ {}
     class ImportFile       extends ImportFile__ {}
     class ListLanguages    extends ListLanguages__ {}

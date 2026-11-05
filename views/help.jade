@@ -3,7 +3,7 @@
     h4 Help
     ul
       li
-        a(page="about-postbird") About Postbird
+        a(page="about-postbird") About JoBird
       li
         a(page="get-postgres") Get Postgres
       //li
@@ -11,19 +11,22 @@
 
   .content
     .page.about-postbird
-      h2 About Postbird
+      h2 About JoBird
 
       p.logo
         img(src="public/images/icon.png")
       p.
-        Postbird is a cross-platform PostgreSQL GUI client, written in JavaScript, runs with Electron
+        JoBird is Josiah Hands' edition of Postbird, a cross-platform PostgreSQL GUI client, written in JavaScript, runs with Electron
       p
         = "Source code at "
+        != link_to("github.com/JosiahHands/JosiahPostbird", "https://github.com/JosiahHands/JosiahPostbird", {class: "external"})
+      p
+        = "Based on Postbird: "
         != link_to("github.com/paxa/postbird", "https://github.com/paxa/postbird", {class: "external"})
 
       br
       p
-        = `Postbird version: ${electron.remote.app.getVersion()}`
+        = `JoBird version: ${electron.remote.app.getVersion()}`
         br
         = `Electron version: ${process.versions.electron}`
         br
