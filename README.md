@@ -9,14 +9,15 @@ JoBird is [JosiahHands](https://github.com/JosiahHands)' edition of [Postbird](h
 
 ## Download
 
-### JoBird v0.8.5
+### JoBird v0.8.6
 
-MacOS (Apple Silicon): [JoBird-0.8.5-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/0.8.5/JoBird-0.8.5-arm64.dmg) - macOS 10.13+
+MacOS (Apple Silicon): [JoBird-0.8.6-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/0.8.6/JoBird-0.8.6-arm64.dmg) - macOS 10.13+
 
 All releases: https://github.com/JosiahHands/JoBird/releases
 
 **What's new in JoBird**
 
+* 0.8.6: fixed the Save as menu being partly hidden behind the result table's header row (CSV and JSON were covered).
 * Query tab: **Save as ▾** button with a format menu: CSV (default), JSON, TypeScript, JavaScript, HTML. The last format you picked is remembered.
 * TypeScript export includes an `interface Result` with each column's type; JavaScript/TypeScript exports use `export const result` (module) by default.
 * The ⚙ at the bottom of the format menu opens Export Settings, to switch JS/TS exports between **Module** and **CommonJS**. Remembered between launches.
@@ -38,7 +39,7 @@ git clone https://github.com/JosiahHands/JoBird.git
 cd JoBird
 npm install
 npm run build
-ls ./dist   # JoBird-0.8.5-arm64.dmg (or -x64 on Intel Macs)
+ls ./dist   # JoBird-0.8.6-arm64.dmg (or -x64 on Intel Macs)
 ```
 
 ### Original Postbird

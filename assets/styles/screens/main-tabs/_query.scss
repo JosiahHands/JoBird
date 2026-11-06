@@ -67,7 +67,9 @@
       right: 0;
       margin-top: 2px;
       min-width: 130px;
-      z-index: 100;
+      // above result table's sticky header (.rescol-header-wrapper, z-index 100),
+      // below app loader (1000) and dialogs (5000+)
+      z-index: 500;
       padding: 4px 0 0;
       background: #fff;
       border: 1px solid rgba(0, 0, 0, 0.2);
