@@ -289,17 +289,21 @@ class Query extends PaneBase {
       ]
     });
     if (res.filePath) {
-      this.saveResultTo(res.filePath, format.id);
+      await this.saveResultTo(res.filePath, format.id);
     }
   }
 
-  saveResultTo (filename, formatId = 'csv') {
+  async saveResultTo (filename, formatId = 'csv') {
     App.startLoading("Saving file...", 100);
 
     try {
-      var content = resultExporter.generate(formatId, this.lastResult.fields, this.lastResult.completeRows, {
-        moduleSystem: Model.ExportSettings.moduleSystem()
-      });
+      var fields = this.lastResult.fields;
+      var options = {moduleSystem: Model.ExportSettings.moduleSystem(), sql: undefined};
+      if (formatId == 'sql') {
+        options.sql = await this.loadSqlExportInfo(fields);
+        options.sql.createTable = Model.ExportSettings.sqlCreateTable();
+      }
+      var content = resultExporter.generate(formatId, fields, this.lastResult.completeRows, options);
       fs.writeFileSync(filename, content, 'utf8');
       console.log('file saved', filename);
     } catch (error) {
@@ -307,6 +311,48 @@ class Query extends PaneBase {
       $u.alert("Can not save file: " + error.message, {type: "warning"});
     } finally {
       App.stopLoading();
+    }
+  }
+
+  // For "Save as SQL": real table name and exact column types of the result columns.
+  // Postgres tells which table/column each result column comes from (tableID/columnID).
+  // Returns {table: {schema, name} or null, columns: [{name, type}]}
+  async loadSqlExportInfo (fields) {
+    var fallback = {table: null, columns: []};
+    var client = this.handler.connection && this.handler.connection.connection;
+    if (!client || !fields.length) return fallback;
+
+    var sql = `
+      SELECT f.idx, n.nspname AS schema_name, c.relname AS table_name, a.attname AS column_name,
+             CASE WHEN a.attrelid IS NOT NULL THEN format_type(a.atttypid, a.atttypmod)
+                  ELSE format_type(f.type_oid, f.type_mod) END AS column_type
+      FROM unnest($1::oid[], $2::int2[], $3::oid[], $4::int4[])
+           WITH ORDINALITY AS f(table_oid, col_num, type_oid, type_mod, idx)
+      LEFT JOIN pg_attribute a ON a.attrelid = f.table_oid AND a.attnum = f.col_num AND f.table_oid <> 0
+      LEFT JOIN pg_class c ON c.oid = a.attrelid
+      LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+      ORDER BY f.idx`;
+
+    try {
+      // directly on pg client, so this lookup doesn't show up in query history
+      var res = await client.query({text: sql, values: [
+        fields.map(f => f.tableID || 0),
+        fields.map(f => f.columnID || 0),
+        fields.map(f => f.dataTypeID),
+        fields.map(f => (f.dataTypeModifier == null ? -1 : f.dataTypeModifier))
+      ]});
+
+      var columns = res.rows.map(row => ({name: row.column_name, type: row.column_type}));
+
+      // one table for all columns -> use its name, otherwise "result"
+      var tables = new Set(res.rows.map(row => (row.table_name ? `${row.schema_name}.${row.table_name}` : null)));
+      var first = res.rows[0];
+      var table = tables.size == 1 && first.table_name ? {schema: first.schema_name, name: first.table_name} : null;
+
+      return {table: table, columns: columns};
+    } catch (error) {
+      console.error("Can not load table info for SQL export, using column names from result", error);
+      return fallback;
     }
   }
 

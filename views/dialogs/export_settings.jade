@@ -12,5 +12,13 @@ form
       code module.exports = { result }
       span.ts-note (TypeScript: export = result)
 
+  p.export-settings-hint "Save as SQL"
+
+  p.module-system-toggle.sql-options
+    label
+      input(type="checkbox" name="sql_create_table" checked=sqlCreateTable)
+      = " Include CREATE TABLE"
+      code before the INSERT statements
+
   p.buttons
     button.ok Done

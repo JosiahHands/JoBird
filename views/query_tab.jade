@@ -14,7 +14,7 @@
       each format in exportFormats
         a.save-format(exec="selectSaveFormat('" + format.id + "')" data-format=format.id)= format.label
       .save-menu-footer
-        a.save-settings(exec="openExportSettings" title="Export settings (module / CommonJS)") ⚙&#xFE0E;
+        a.save-settings(exec="openExportSettings" title="Export settings (module / CommonJS, SQL)") ⚙&#xFE0E;
 .result
   .rescol-wrapper
     .rescol-header-wrapper

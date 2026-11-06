@@ -7,7 +7,7 @@ class ExportSettings {
     return require('../../lib/result_exporter');
   }
 
-  // "csv", "json", "typescript", "javascript" or "html"; csv when nothing saved yet
+  // "csv", "json", "typescript", "javascript", "html" or "sql"; csv when nothing saved yet
   static format () /*: string */ {
     return ExportSettings.exporter().findFormat(ExportSettings.read('exportFormat')).id;
   }
@@ -27,6 +27,15 @@ class ExportSettings {
     if (ExportSettings.exporter().normalizeModuleSystem(value) == value) {
       ExportSettings.write('exportModuleSystem', value);
     }
+  }
+
+  // "Save as SQL": write CREATE TABLE before the INSERTs (default on)
+  static sqlCreateTable () /*: boolean */ {
+    return ExportSettings.read('exportSqlCreateTable') != 'false';
+  }
+
+  static setSqlCreateTable (value /*: boolean */) {
+    ExportSettings.write('exportSqlCreateTable', value ? 'true' : 'false');
   }
 
   static read (key /*: string */) /*: string */ {

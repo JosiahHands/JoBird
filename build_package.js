@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */ // "${productName}" etc. are electron-builder macros, not JS templates
 const builder = require("electron-builder");
 
 var packageJson = require('./package.json');
@@ -50,11 +51,12 @@ process.on('unhandledRejection', error => {
 
       mac: {
         category: "public.app-category.developer-tools",
-        target: ["dmg"],
-        artifactName: "${productName}-${version}-${arch}.${ext}", // e.g. JoBird-0.8.5-arm64.dmg
+        // separate dmg for Apple Silicon and Intel Macs
+        target: [{target: "dmg", arch: ["arm64", "x64"]}],
+        artifactName: "${productName}-${version}-${arch}.${ext}", // JoBird-0.8.7-arm64.dmg, JoBird-0.8.7-x64.dmg
         bundleVersion: buildVersion,
         bundleShortVersion: packageJson.version,
-        minimumSystemVersion: "10.9.0",
+        minimumSystemVersion: "10.13.0", // lowest macOS supported by Electron 21
         extendInfo: {
           NSRequiresAquaSystemAppearance: false,
         },
@@ -67,40 +69,46 @@ process.on('unhandledRejection', error => {
 
       linux: {
         category: "Programming",
-        target: ["deb", "rpm", "snap", "appImage", "pacman", "apk"],
+        target: ["deb", "rpm", "AppImage"],
         icon: __dirname + "/build_files/icon.png",
         mimeTypes: ["application/sql"],
-        description: "Postbird is a cross-platform PostgreSQL GUI client. Simple and efficient, with support of postgres specific features"
+        maintainer: "Josiah Hands (https://github.com/JosiahHands)",
+        vendor: "Josiah Hands",
+        description: "JoBird is a cross-platform PostgreSQL GUI client based on Postbird. Simple and efficient, with support of postgres specific features"
       },
-      rpm: {
-        depends: ["postgresql"],
-        icon: __dirname + "/build_files/icon.png",
-        desktop: "Postbird",
-        synopsis: "PostgreSQL desktop client"
-      },
+      // packageName: own package name, so it doesn't replace an installed "postbird" package
       deb: {
+        packageName: "jobird",
+        artifactName: "${productName}_${version}_${arch}.${ext}", // jobird_0.8.7_amd64.deb
         depends: [
-          'gconf2', 'gconf-service', 'libnotify4', 'libappindicator1',
-          'libxtst6', 'libnss3', 'libxss1', "postgresql-client"
+          // electron-builder defaults + psql/pg_dump for import/export
+          "libgtk-3-0", "libnotify4", "libnss3", "libxss1", "libxtst6", "xdg-utils",
+          "libatspi2.0-0", "libuuid1", "libsecret-1-0", "postgresql-client"
         ],
         synopsis: "PostgreSQL desktop client"
       },
-      snap: {
-        grade: "stable",
-        summary: "PostgreSQL desktop client"
+      rpm: {
+        packageName: "jobird",
+        artifactName: "${productName}-${version}.${arch}.${ext}", // jobird-0.8.7.x86_64.rpm
+        depends: ["postgresql"],
+        synopsis: "PostgreSQL desktop client"
       },
       appImage: {
+        artifactName: "${productName}-${version}-${arch}.${ext}", // jobird-0.8.7-x86_64.AppImage
         synopsis: "PostgreSQL desktop client",
         category: "Development",
       },
-      pacman: { },
-      apk: { },
 
       nsis: {
-        installerIcon: "build_files/icon.ico"
+        installerIcon: "build_files/icon.ico",
+        artifactName: "${productName}-Setup-${version}.${ext}" // JoBird-Setup-0.8.7.exe
+      },
+      portable: {
+        artifactName: "${productName}-${version}-portable.${ext}" // JoBird-0.8.7-portable.exe
       },
       win: {
         target: ["nsis", "zip", "portable"],
+        artifactName: "${productName}-${version}-win.${ext}", // JoBird-0.8.7-win.zip
         verifyUpdateCodeSignature: false,
         icon: "build_files/icon.ico",
         extraFiles: [

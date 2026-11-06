@@ -1,99 +1,103 @@
 name: Build/release
 
-on: push
+# Every push to main builds JoBird for macOS, Windows and Linux (files are
+# kept as workflow artifacts). Pushing a tag like v0.8.7 also publishes a
+# GitHub release with all installers attached.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  release:
+  build:
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # build_package.js uses the commit count as build number
 
-      - name: Install Node.js, NPM and Yarn
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
 
-      - name: Add python setuptools
+      - name: Add python setuptools (node-gyp)
+        if: runner.os == 'macOS'
+        continue-on-error: true
+        run: python3 -m pip install --break-system-packages setuptools
+
+      - name: Install rpm tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # macOS gets one retry: dmg creation on macOS runners fails now and then
+      # for transient reasons (same idea as the old max_attempts: 2 for macOS)
+      - name: Build app
         shell: bash
-        run: pip install setuptools
-        if: ${{ runner.os == 'macOS' }}
+        run: |
+          attempts=1
+          if [ "$RUNNER_OS" = "macOS" ]; then attempts=2; fi
+          for i in $(seq 1 $attempts); do
+            npm run build && exit 0
+            echo "Build attempt $i failed"
+          done
+          exit 1
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false' # no code signing certificate
 
-      - name: Build/release app
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          max_attempts: ${{ runner.os == 'macOS' && 2 || 1 }}
-
-      - name: List Files
+      - name: List files
         shell: bash
         run: ls -lah dist
 
-      - name: Upload Postbird.dmg
+      - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
-          name: Postbird.dmg
-          path: dist/*.dmg
-        if: ${{ runner.os == 'macOS' }}
+          name: JoBird-${{ runner.os }}
+          if-no-files-found: error
+          path: |
+            dist/*.dmg
+            dist/*.exe
+            dist/*.zip
+            dist/*.deb
+            dist/*.rpm
+            dist/*.AppImage
 
-      - name: Upload Postbird_setup.exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: Postbird_setup.exe
-          path: dist/*.exe
-        if: ${{ runner.os == 'Windows' }}
+  release:
+    name: Publish GitHub release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
 
-      - name: Upload Postbird-win.zip
-        uses: actions/upload-artifact@v4
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
         with:
-          name: Postbird_win.zip
-          path: dist/*.zip
-        if: ${{ runner.os == 'Windows' }}
+          path: installers
+          merge-multiple: true
 
-      - name: Upload Postbird.snap
-        uses: actions/upload-artifact@v4
-        with:
-          name: Postbird.snap
-          path: dist/*.snap
-        if: ${{ runner.os == 'Linux' }}
+      - name: List files
+        run: ls -lah installers
 
-      - name: Upload Postbird.AppImage
-        uses: actions/upload-artifact@v4
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          name: Postbird.AppImage
-          path: dist/Postbird*.AppImage
-        if: ${{ runner.os == 'Linux' }}
-
-      - name: Upload Postbird.deb
-        uses: actions/upload-artifact@v4
-        with:
-          name: Postbird.deb
-          path: dist/*.deb
-        if: ${{ runner.os == 'Linux' }}
-
-      - name: Upload Postbird.rpm
-        uses: actions/upload-artifact@v4
-        with:
-          name: Postbird.rpm
-          path: dist/*.rpm
-        if: ${{ runner.os == 'Linux' }}
-
-      - name: Upload Postbird.pacman
-        uses: actions/upload-artifact@v4
-        with:
-          name: Postbird.pacman
-          path: dist/*.pacman
-        if: ${{ runner.os == 'Linux' }}
-
-      - name: Upload Postbird.apk
-        uses: actions/upload-artifact@v4
-        with:
-          name: Postbird.apk
-          path: dist/*.apk
-        if: ${{ runner.os == 'Linux' }}
+          name: JoBird ${{ github.ref_name }}
+          files: installers/*
+          generate_release_notes: true

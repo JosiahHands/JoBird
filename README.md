@@ -9,28 +9,52 @@ JoBird is [JosiahHands](https://github.com/JosiahHands)' edition of [Postbird](h
 
 ## Download
 
-### JoBird v0.8.6
+### JoBird v0.8.7
 
-MacOS (Apple Silicon): [JoBird-0.8.6-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/0.8.6/JoBird-0.8.6-arm64.dmg) - macOS 10.13+
+**macOS** (10.13+)
+
+* Apple Silicon (M1 and newer): [JoBird-0.8.7-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/JoBird-0.8.7-arm64.dmg)
+* Intel: [JoBird-0.8.7-x64.dmg](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/JoBird-0.8.7-x64.dmg)
+
+**Windows** (64-bit)
+
+* Installer: [JoBird-Setup-0.8.7.exe](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/JoBird-Setup-0.8.7.exe)
+* Portable, no install needed: [JoBird-0.8.7-portable.exe](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/JoBird-0.8.7-portable.exe)
+* Zip: [JoBird-0.8.7-win.zip](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/JoBird-0.8.7-win.zip)
+
+**Linux** (64-bit)
+
+* Debian / Ubuntu: [jobird_0.8.7_amd64.deb](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/jobird_0.8.7_amd64.deb)
+* Fedora / RHEL / openSUSE: [jobird-0.8.7.x86_64.rpm](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/jobird-0.8.7.x86_64.rpm)
+* Any distro: [jobird-0.8.7-x86_64.AppImage](https://github.com/JosiahHands/JoBird/releases/download/v0.8.7/jobird-0.8.7-x86_64.AppImage)
 
 All releases: https://github.com/JosiahHands/JoBird/releases
 
 **What's new in JoBird**
 
+* 0.8.7: JoBird for **Windows** and **Linux**, plus Intel Macs.
+* 0.8.7: **Save as SQL**: `CREATE TABLE` + `INSERT` statements that recreate the result in another database. A single-table query keeps the real table name (e.g. `people`), other queries use `result`. Columns keep their real names and exact types (e.g. `character varying(255)`). Export Settings (⚙) can turn off the `CREATE TABLE`.
 * 0.8.6: fixed the Save as menu being partly hidden behind the result table's header row (CSV and JSON were covered).
-* Query tab: **Save as ▾** button with a format menu: CSV (default), JSON, TypeScript, JavaScript, HTML. The last format you picked is remembered.
+* Query tab: **Save as ▾** button with a format menu: CSV (default), JSON, TypeScript, JavaScript, HTML, SQL. The last format you picked is remembered.
 * TypeScript export includes an `interface Result` with each column's type; JavaScript/TypeScript exports use `export const result` (module) by default.
-* The ⚙ at the bottom of the format menu opens Export Settings, to switch JS/TS exports between **Module** and **CommonJS**. Remembered between launches.
+* The ⚙ at the bottom of the format menu opens Export Settings, to switch JS/TS exports between **Module** and **CommonJS** and choose whether SQL exports include `CREATE TABLE`. Remembered between launches.
 
 **Installing**
 
-1. Open the `.dmg` and drag **JoBird** into Applications.
-2. JoBird is a separate app (bundle ID `com.josiahhands.jobird`), so it installs next to the original Postbird without replacing it.
-3. The app isn't signed with an Apple Developer ID, so macOS may block the first launch. Right-click JoBird in Applications and choose **Open**, or run:
+JoBird is a separate app from the original Postbird (bundle ID `com.josiahhands.jobird`, Linux package `jobird`), so it installs next to it without replacing it. The app isn't code-signed, so the first launch may need one extra step:
 
-   ```sh
-   xattr -dr com.apple.quarantine /Applications/JoBird.app
-   ```
+* **macOS:** open the `.dmg` and drag **JoBird** into Applications. If macOS blocks it, right-click JoBird in Applications and choose **Open**, or run:
+
+  ```sh
+  xattr -dr com.apple.quarantine /Applications/JoBird.app
+  ```
+
+* **Windows:** if SmartScreen shows "Windows protected your PC", click **More info** → **Run anyway**.
+* **Linux:** install the package (`sudo apt install ./jobird_0.8.7_amd64.deb` or `sudo dnf install ./jobird-0.8.7.x86_64.rpm`), or make the AppImage executable and run it:
+
+  ```sh
+  chmod +x jobird-0.8.7-x86_64.AppImage && ./jobird-0.8.7-x86_64.AppImage
+  ```
 
 **Build it yourself**
 
@@ -39,8 +63,10 @@ git clone https://github.com/JosiahHands/JoBird.git
 cd JoBird
 npm install
 npm run build
-ls ./dist   # JoBird-0.8.6-arm64.dmg (or -x64 on Intel Macs)
+ls ./dist   # installers for the system you build on
 ```
+
+Releases are built by GitHub Actions ([build.yml](.github/workflows/build.yml)) on macOS, Windows and Linux: pushing a tag like `v0.8.7` builds all installers and publishes them as a GitHub release.
 
 ### Original Postbird
 

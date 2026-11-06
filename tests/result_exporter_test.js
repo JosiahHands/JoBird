@@ -137,6 +137,65 @@ describe('ResultExporter', () => {
     assert(empty.includes('    <tbody>\n    </tbody>'));
   });
 
+  it("sql uses real table, column names and types", () => {
+    var sql = ResultExporter.generate('sql',
+      [{name: 'first', dataTypeID: 1043}, {name: 'hr', dataTypeID: 23}],
+      [["O'Neil", 30], [null, 2]],
+      {sql: {
+        table: {schema: 'public', name: 'people'},
+        columns: [{name: 'namefirst', type: 'character varying(255)'}, {name: 'hr', type: 'integer'}]
+      }}
+    );
+    assert.equal(sql,
+      '-- Exported from JoBird: 2 rows\n' +
+      'BEGIN;\n\n' +
+      'CREATE TABLE people (\n' +
+      '  namefirst character varying(255),\n' +
+      '  hr integer\n' +
+      ');\n\n' +
+      "INSERT INTO people (namefirst, hr) VALUES ('O''Neil', 30);\n" +
+      'INSERT INTO people (namefirst, hr) VALUES (NULL, 2);\n\n' +
+      'COMMIT;\n'
+    );
+  });
+
+  it("sql without CREATE TABLE, other schema, quoted names", () => {
+    var sql = ResultExporter.generate('sql',
+      [{name: 'User', dataTypeID: 25}, {name: 'order', dataTypeID: 23}],
+      [['a', 1]],
+      {sql: {table: {schema: 'Stats', name: 'my table'}, columns: [], createTable: false}}
+    );
+    assert(!sql.includes('CREATE TABLE'));
+    assert(sql.includes('INSERT INTO "Stats"."my table" ("User", "order") VALUES (\'a\', 1);'), sql);
+  });
+
+  it("sql falls back to result table with unique columns", () => {
+    var sql = ResultExporter.generate('sql', [{name: 'id', dataTypeID: 23}, {name: 'id', dataTypeID: 20}], [[1, '2']]);
+    assert(sql.includes('CREATE TABLE result (\n  id integer,\n  id_2 bigint\n);'), sql);
+    assert(sql.includes("INSERT INTO result (id, id_2) VALUES (1, '2');"), sql);
+  });
+
+  it("sql value literals", () => {
+    var lit = ResultExporter.sqlLiteral;
+    var ts = new Date(2020, 1, 3, 4, 5, 6, 7);
+    var tsMoment = {origValueString: '2020-02-03 04:05:06.123456+03', toISOString: () => 'x'};
+    assert.equal(lit(null, 23), 'NULL');
+    assert.equal(lit(true, 16), 'TRUE');
+    assert.equal(lit(NaN, 701), "'NaN'");
+    assert.equal(lit(-Infinity, 701), "'-Infinity'");
+    assert.equal(lit(1.5, 701), '1.5');
+    assert.equal(lit(Buffer.from([0xde, 0xad]), 17), "'\\xdead'");
+    assert.equal(lit(new Date(2020, 1, 3), 1082), "'2020-02-03'");
+    assert.equal(lit(ts, 1114), "'2020-02-03 04:05:06.007'");
+    assert.equal(lit(tsMoment, 1184), "'2020-02-03 04:05:06.123456+03'");
+    assert.equal(lit({toPostgres: () => '1 day'}, 1186), "'1 day'");
+    assert.equal(lit({x: 1, y: 2}, 600), "'(1,2)'");
+    assert.equal(lit({a: [1, "it's"]}, 3802), `'{"a":[1,"it''s"]}'`);
+    assert.equal(lit([1, null, 3], 1007), `'{"1",NULL,"3"}'`);
+    assert.equal(lit([['a"b', 'c\\d'], []], 1009), `'{{"a\\"b","c\\\\d"},{}}'`);
+    assert.equal(lit([{a: 1}, null], 3807), `'{"{\\"a\\":1}",NULL}'`);
+  });
+
   it("unknown format and module system fall back to defaults", () => {
     assert.equal(ResultExporter.findFormat('xml').id, 'csv');
     assert.equal(ResultExporter.normalizeModuleSystem('amd'), 'module');
