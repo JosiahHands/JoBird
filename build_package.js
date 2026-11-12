@@ -135,5 +135,28 @@ process.on('unhandledRejection', error => {
         ]
       }
     }
-  })
+  });
+
+  if (process.platform === 'darwin') hideUnpackedApps();
 })();
+
+// electron-builder leaves unpacked copies of the app in dist/mac and
+// dist/mac-arm64, which Spotlight finds and lists next to the installed app.
+// Spotlight skips folders ending in ".noindex", so move them in there.
+// They still run from dist/unpacked.noindex/<dir>/JoBird.app for testing.
+function hideUnpackedApps () {
+  const fs = require('fs');
+  const path = require('path');
+  const dist = path.join(__dirname, 'dist');
+  const hidden = path.join(dist, 'unpacked.noindex');
+
+  fs.mkdirSync(hidden, {recursive: true});
+  const dirs = ['mac', 'mac-arm64', 'mac-universal'].filter(dir => fs.existsSync(path.join(dist, dir)));
+  for (const dir of dirs) {
+    const from = path.join(dist, dir);
+    const to = path.join(hidden, dir);
+    fs.rmSync(to, {recursive: true, force: true}); // replace the previous build
+    fs.renameSync(from, to);
+    console.log(`  • moved unpacked app to ${path.relative(__dirname, to)} (hidden from Spotlight)`);
+  }
+}
