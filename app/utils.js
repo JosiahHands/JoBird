@@ -219,18 +219,17 @@ $u.listenClickOutside = function listenClickOutside (element, options, callback)
 
 // <input type="file" accept=".doc,.docx,.xml,application/msword">
 
-$u.openFileDialog = function (fileExt) {
-  return new Promise((resolve, reject) => {
-    var mainWindow = electronRemote.app.mainWindow;
-    electronRemote.dialog.showOpenDialog(mainWindow, {
-      properties: [ 'openFile' ],
-      filters: [
-        { name: 'SQL Files', extensions: [fileExt, 'sql', 'pgsql'] },
-      ]
-    }, (files) => {
-      resolve(files);
-    });
+// Resolves with the chosen file paths ([] when cancelled).
+// Electron 6+ returns a Promise here and ignores a callback argument.
+$u.openFileDialog = async function (fileExt) {
+  var mainWindow = electronRemote.app.mainWindow;
+  var result = await electronRemote.dialog.showOpenDialog(mainWindow, {
+    properties: [ 'openFile' ],
+    filters: [
+      { name: 'SQL Files', extensions: [fileExt, 'sql', 'pgsql'] },
+    ]
   });
+  return result.canceled ? [] : result.filePaths;
 };
 
 $u.confirm = async (text, options = {}) => {
