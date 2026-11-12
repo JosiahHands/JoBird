@@ -9,29 +9,30 @@ JoBird is [JosiahHands](https://github.com/JosiahHands)' edition of [Postbird](h
 
 ## Download
 
-### JoBird v0.8.8
+### JoBird v0.8.9
 
 **macOS** (10.13+)
 
-* Apple Silicon (M1 and newer): [JoBird-0.8.8-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/JoBird-0.8.8-arm64.dmg)
-* Intel: [JoBird-0.8.8-x64.dmg](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/JoBird-0.8.8-x64.dmg)
+* Apple Silicon (M1 and newer): [JoBird-0.8.9-arm64.dmg](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/JoBird-0.8.9-arm64.dmg)
+* Intel: [JoBird-0.8.9-x64.dmg](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/JoBird-0.8.9-x64.dmg)
 
 **Windows** (64-bit)
 
-* Installer: [JoBird-Setup-0.8.8.exe](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/JoBird-Setup-0.8.8.exe)
-* Portable, no install needed: [JoBird-0.8.8-portable.exe](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/JoBird-0.8.8-portable.exe)
-* Zip: [JoBird-0.8.8-win.zip](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/JoBird-0.8.8-win.zip)
+* Installer: [JoBird-Setup-0.8.9.exe](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/JoBird-Setup-0.8.9.exe)
+* Portable, no install needed: [JoBird-0.8.9-portable.exe](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/JoBird-0.8.9-portable.exe)
+* Zip: [JoBird-0.8.9-win.zip](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/JoBird-0.8.9-win.zip)
 
 **Linux** (64-bit)
 
-* Debian / Ubuntu: [jobird_0.8.8_amd64.deb](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/jobird_0.8.8_amd64.deb)
-* Fedora / RHEL / openSUSE: [jobird-0.8.8.x86_64.rpm](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/jobird-0.8.8.x86_64.rpm)
-* Any distro: [jobird-0.8.8-x86_64.AppImage](https://github.com/JosiahHands/JoBird/releases/download/v0.8.8/jobird-0.8.8-x86_64.AppImage)
+* Debian / Ubuntu: [jobird_0.8.9_amd64.deb](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/jobird_0.8.9_amd64.deb)
+* Fedora / RHEL / openSUSE: [jobird-0.8.9.x86_64.rpm](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/jobird-0.8.9.x86_64.rpm)
+* Any distro: [jobird-0.8.9-x86_64.AppImage](https://github.com/JosiahHands/JoBird/releases/download/v0.8.9/jobird-0.8.9-x86_64.AppImage)
 
 All releases: https://github.com/JosiahHands/JoBird/releases
 
 **What's new in JoBird**
 
+* 0.8.9: **Import** and **Export** work on Apple Silicon Macs: the bundled `psql` and `pg_dump` are now signed, so macOS no longer stops them from running.
 * 0.8.8: fixed **Import .sql file**: after picking a file, the import dialog never opened, so nothing was imported.
 * 0.8.7: JoBird for **Windows** and **Linux**, plus Intel Macs.
 * 0.8.7: **Save as SQL**: `CREATE TABLE` + `INSERT` statements that recreate the result in another database. A single-table query keeps the real table name (e.g. `people`), other queries use `result`. Columns keep their real names and exact types (e.g. `character varying(255)`). Export Settings (⚙) can turn off the `CREATE TABLE`.
@@ -51,10 +52,10 @@ JoBird is a separate app from the original Postbird (bundle ID `com.josiahhands.
   ```
 
 * **Windows:** if SmartScreen shows "Windows protected your PC", click **More info** → **Run anyway**.
-* **Linux:** install the package (`sudo apt install ./jobird_0.8.8_amd64.deb` or `sudo dnf install ./jobird-0.8.8.x86_64.rpm`), or make the AppImage executable and run it:
+* **Linux:** install the package (`sudo apt install ./jobird_0.8.9_amd64.deb` or `sudo dnf install ./jobird-0.8.9.x86_64.rpm`), or make the AppImage executable and run it:
 
   ```sh
-  chmod +x jobird-0.8.8-x86_64.AppImage && ./jobird-0.8.8-x86_64.AppImage
+  chmod +x jobird-0.8.9-x86_64.AppImage && ./jobird-0.8.9-x86_64.AppImage
   ```
 
 **Build it yourself**
@@ -67,7 +68,7 @@ npm run build
 ls ./dist   # installers for the system you build on
 ```
 
-Releases are built by GitHub Actions ([build.yml](.github/workflows/build.yml)) on macOS, Windows and Linux: pushing a tag like `v0.8.8` builds all installers and publishes them as a GitHub release.
+Releases are built by GitHub Actions ([build.yml](.github/workflows/build.yml)) on macOS, Windows and Linux: pushing a tag like `v0.8.9` builds all installers and publishes them as a GitHub release.
 
 ### Original Postbird
 

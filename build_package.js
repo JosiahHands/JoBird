@@ -31,9 +31,28 @@ process.on('unhandledRejection', error => {
   const buildVersion = `${commitsCount} - ${commitID}`;
   console.log('build-version', buildVersion);
 
+  // The psql/pg_dump binaries and their dylibs in vendor/darwin are unsigned.
+  // Apple Silicon kills unsigned arm64 code on launch, which silently broke
+  // Import/Export. Ad-hoc sign them inside the packaged app; this runs before
+  // electron-builder signs the app bundle, so the bundle seal covers them.
+  const signVendorBinaries = async (context) => {
+    if (context.electronPlatformName !== 'darwin') return;
+    const appPath = `${context.appOutDir}/${context.packager.appInfo.productFilename}.app`;
+    const vendorDir = `${appPath}/Contents/vendor/darwin`;
+    // dylibs first, then the executables that load them
+    const files = require('fs').readdirSync(vendorDir)
+      .sort((a, b) => b.endsWith('.dylib') - a.endsWith('.dylib'));
+    if (files.length === 0) throw new Error(`no vendor binaries found in ${vendorDir}`);
+    for (const file of files) {
+      await exec(`codesign --sign - --force "${vendorDir}/${file}"`);
+    }
+    console.log(`  • ad-hoc signed vendor binaries in ${vendorDir}`);
+  };
+
   await builder.build({
     //targets: Platform.MAC.createTarget(),
     config: {
+      afterPack: signVendorBinaries,
       protocols: {
         name: "Postgres Database",
         schemes: ["postgres", "postgresql"],
